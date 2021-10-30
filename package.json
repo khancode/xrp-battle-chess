@@ -1,7 +1,7 @@
 {
-  "name": "react-typescript-webpack-template",
+  "name": "react-chess",
   "version": "1.0.0",
-  "description": "A minimal, barebones React & TypeScript with Webpack boilerplate application",
+  "description": "Chess implemented using React",
   "main": "index.html",
   "scripts": {
     "build": "npx webpack --mode production",
