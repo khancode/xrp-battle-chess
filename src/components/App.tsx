@@ -1,41 +1,26 @@
 import * as React from 'react';
-import './App.css';
+import {
+   BrowserRouter,
+   Switch,
+   Route,
+   Link
+} from "react-router-dom";
+import { ChessGame } from './ChessGame';
 import { GameList } from './GameList';
+import { Home } from './Home';
 
-export interface AppProps {
-   compiler: string;
-   framework: string;
-}
+export interface AppProps {}
 
 export const App = (props: AppProps) => {
    return (
-      <div className="app">
-         <h1>Online React Chess!</h1>
-         <h2 className="description">
-            Online chess implemented in React.js and Node.js
-         </h2>
-         <GameList />
-      </div>
+      <BrowserRouter>
+         {/* A <Switch> looks through its children <Route>s and
+         renders the first one that matches the current URL. */}
+         <Switch>
+            <Route path="/games" component={GameList} />
+            <Route path="/game" component={ChessGame} />
+            <Route path="/" component={Home} />
+         </Switch>
+      </BrowserRouter>
    );
 };
-
-/*
-// 'AppProps' describes the shape of props.
-// State is never set so we use the '{}' type.
-export class App extends React.Component<AppProps, {}> {
-   constructor(props: AppProps) {
-      super(props);
-   }
-
-   render() {
-      return (
-         <div className="app">
-            <h1>{this.props.framework} & {this.props.compiler} with Webpack template!</h1>
-            <h2 className="description">
-               A minimal, barebones {this.props.framework} & {this.props.compiler} with Webpack boilerplate application
-            </h2>
-         </div>
-      );
-   }
-}
-*/

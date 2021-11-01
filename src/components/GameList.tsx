@@ -2,6 +2,7 @@ import { Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, styled } 
 import axios from 'axios';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import socketService from '../services/socketService';
 import './GameList.css';
@@ -10,6 +11,7 @@ export interface GameListProps {}
 
 export const GameList = (props: GameListProps) => {
     const [rooms, setRooms] = useState([]);
+    const history = useHistory();
 
     const getAllRooms = async () => {
         const response = await axios.get('http://localhost:3000/rooms');
@@ -28,7 +30,7 @@ export const GameList = (props: GameListProps) => {
                     <ListItem
                         key={room}
                         secondaryAction={
-                            <Button variant="contained" onClick={() => alert('TODO implement')}>
+                            <Button variant="contained" onClick={() => history.push('/game')}>
                                 Join Game
                             </Button>
                         }
@@ -52,8 +54,8 @@ export const GameList = (props: GameListProps) => {
         const socket = await socketService
             .connect('http://localhost:3000')
             .catch((err) => {
-            console.log("Error: ", err);
-        });
+                console.log("Error: ", err);
+            });
         getAllRooms();
     };
 

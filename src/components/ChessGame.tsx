@@ -2,7 +2,7 @@ import * as ChessJS from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import * as React from 'react';
 import { useState } from 'react';
-import './App.css';
+import './ChessGame.css';
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
 
@@ -71,12 +71,12 @@ export const ChessGame = (props: ChessGameProps) => {
    };
 
    return (
-      <div className="app">
+      <div className="home">
          <h1>Chess Game</h1>
          <h2 className="description">
             This is a Chess Game component.
          </h2>
-         <Chessboard position={game.fen()} onPieceDrop={onDrop} onPieceClick={onClick} boardOrientation="black" />
+         <Chessboard position={game.fen()} onPieceDrop={onDrop} onPieceClick={onClick} boardOrientation="white" />
       </div>
    );
 };
