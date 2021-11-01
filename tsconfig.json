@@ -1,10 +1,11 @@
 {
    "compilerOptions": {
        "sourceMap": true,
-       "noImplicitAny": true,
+       "noImplicitAny": false,
        "module": "commonjs",
        "target": "es6",
-       "jsx": "react"
+       "jsx": "react",
+       "experimentalDecorators": true,
    },
-   "exclude": ["server", "**/*.js"]
+   "exclude": ["**/*.js"]
 }

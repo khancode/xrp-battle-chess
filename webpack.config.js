@@ -43,6 +43,8 @@ module.exports = {
       ]
    },
 
+   ignoreWarnings: [/Failed to parse source map/],
+
    plugins: [
       new HtmlWebpackPlugin({
          template: './src/index.html'
