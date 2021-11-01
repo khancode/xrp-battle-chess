@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { ChessGame } from './ChessGame';
 import './App.css';
-import { ProposeGame } from './ProposeGame';
+import { GameList } from './GameList';
 
 export interface AppProps {
    compiler: string;
@@ -11,12 +10,11 @@ export interface AppProps {
 export const App = (props: AppProps) => {
    return (
       <div className="app">
-         <h1>{props.framework} & {props.compiler} with Webpack template!</h1>
+         <h1>Online React Chess!</h1>
          <h2 className="description">
-            A minimal, barebones {props.framework} & {props.compiler} with Webpack boilerplate application
+            Online chess implemented in React.js and Node.js
          </h2>
-         {/* <ChessGame /> */}
-         <ProposeGame />
+         <GameList />
       </div>
    );
 };

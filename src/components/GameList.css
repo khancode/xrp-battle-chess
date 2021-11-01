@@ -1,0 +1,5 @@
+.game-list {
+    display: flex;
+    flex-direction: column;
+    width: 750px;
+}
