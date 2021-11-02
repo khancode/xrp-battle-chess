@@ -3,3 +3,8 @@
     flex-direction: column;
     width: 750px;
 }
+
+.create-game-input {
+    display: flex;
+    justify-content: center;
+}

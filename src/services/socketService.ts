@@ -5,7 +5,7 @@ class SocketService {
 
     public connect(
         url: string
-    ): Promise<Socket<any, any>> {
+    ): Promise<Socket> {
         return new Promise((rs, rj) => {
             this.socket = io(url);
 
