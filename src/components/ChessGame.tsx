@@ -1,9 +1,11 @@
 import * as ChessJS from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 import './ChessGame.css';
+import socketService from '../services/socketService';
+import gameService from '../services/gameService';
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
 
@@ -20,7 +22,21 @@ export const ChessGame = (props: ChessGameProps) => {
    const [startTime] = useState(state.startTime);
    const [timeLengthMs] = useState(state.timeLengthMs);
 
-   function safeGameMutate(modify: any) {
+   const handleGameUpdate = () => {
+      if (socketService.socket) {
+         gameService.onGameUpdate(socketService.socket, (fen) => {
+            safeGameMutate((game) => {
+               game.load(fen)
+            });
+         });
+      }
+   };
+
+   useEffect(() => {
+      handleGameUpdate();
+   }, []);
+
+   function safeGameMutate(modify) {
       setGame((g) => {
          const update = { ...g };
          modify(update);
@@ -37,14 +53,14 @@ export const ChessGame = (props: ChessGameProps) => {
       });
    }
   
-   function onDrop(sourceSquare: any, targetSquare: any) {
+   function onDrop(sourceSquare, targetSquare) {
       console.log('sourceSquare:', sourceSquare);
       console.log('targetSquare:', targetSquare);
       console.log(game.turn());
 
 
       let move = null;
-      safeGameMutate((game: any) => {
+      safeGameMutate((game) => {
          move = game.move({
             from: sourceSquare,
             to: targetSquare,
@@ -52,7 +68,9 @@ export const ChessGame = (props: ChessGameProps) => {
          });
       });
       if (move === null) return false; // illegal move
-      setTimeout(makeRandomMove, 200);
+
+      /* Uncomment line below to have the computer play */
+      // setTimeout(makeRandomMove, 200);
 
       // @ts-ignore: Object is possibly 'null'.
       if (move != null && move.captured) {
@@ -68,10 +86,12 @@ export const ChessGame = (props: ChessGameProps) => {
          });
       }
 
+      gameService.updateGame(socketService.socket, game.fen());
+
       return true;
    }
 
-   const onClick = (piece: any) => {
+   const onClick = (piece) => {
       console.log(piece);
    };
 

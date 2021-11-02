@@ -4,8 +4,8 @@ import {
   OnMessage,
   SocketController,
   SocketIO,
-} from "socket-controllers";
-import { Server, Socket } from "socket.io";
+} from 'socket-controllers';
+import { Server, Socket } from 'socket.io';
 
 @SocketController()
 export class GameController {
@@ -18,23 +18,23 @@ export class GameController {
     return gameRoom;
   }
 
-  @OnMessage("update_game")
+  @OnMessage('update_game')
   public async updateGame(
     @SocketIO() io: Server,
     @ConnectedSocket() socket: Socket,
     @MessageBody() message: any
   ) {
     const gameRoom = this.getSocketGameRoom(socket);
-    socket.to(gameRoom).emit("on_game_update", message);
+    socket.to(gameRoom).emit('on_game_update', message);
   }
 
-  @OnMessage("game_win")
+  @OnMessage('game_win')
   public async gameWin(
     @SocketIO() io: Server,
     @ConnectedSocket() socket: Socket,
     @MessageBody() message: any
   ) {
     const gameRoom = this.getSocketGameRoom(socket);
-    socket.to(gameRoom).emit("on_game_win", message);
+    socket.to(gameRoom).emit('on_game_win', message);
   }
 }
