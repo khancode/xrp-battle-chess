@@ -2,6 +2,7 @@ import * as ChessJS from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import * as React from 'react';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom'
 import './ChessGame.css';
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
@@ -14,6 +15,10 @@ export const ChessGame = (props: ChessGameProps) => {
       {w: {p: 0, n: 0, b: 0, r: 0, q: 0},
        b: {p: 0, n: 0, b: 0, r: 0, q: 0}}
    );
+   const { state }: any = useLocation<Location>();
+   const [playerColor] = useState(state.color);
+   const [startTime] = useState(state.startTime);
+   const [timeLengthMs] = useState(state.timeLengthMs);
 
    function safeGameMutate(modify: any) {
       setGame((g) => {
@@ -76,7 +81,14 @@ export const ChessGame = (props: ChessGameProps) => {
          <h2 className="description">
             This is a Chess Game component.
          </h2>
-         <Chessboard position={game.fen()} onPieceDrop={onDrop} onPieceClick={onClick} boardOrientation="white" />
+         <div>startTime: {(new Date(startTime)).toLocaleDateString()} {(new Date(startTime)).toLocaleTimeString()}</div>
+         <div>timeLengthMs: {timeLengthMs}</div>
+         <Chessboard
+            position={game.fen()}
+            onPieceDrop={onDrop}
+            onPieceClick={onClick}
+            boardOrientation={playerColor}
+            />
       </div>
    );
 };

@@ -7,6 +7,12 @@ import {
 } from "socket-controllers";
 import { Server, Socket } from "socket.io";
 
+enum PlayerColor {
+  white = 'white',
+  black = 'black',
+}
+const timeLengthMs = 600000; // 10 minutes (in milliseconds)
+
 @SocketController()
 export class RoomController {
   @OnMessage("join_game")
@@ -34,10 +40,16 @@ export class RoomController {
       socket.emit("room_joined");
 
       if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
-        socket.emit("start_game", { start: true, symbol: "x" });
+        // Simulate coin flip to randomly assign colors to each player
+        const { white, black } = PlayerColor;
+        const color1 = Math.round(Math.random()) === 0 ? white : black;
+        const color2 = color1 === white ? black : white;
+        const startTime = Date.now();
+
+        socket.emit("start_game", { start: true, color: color1, startTime, timeLengthMs });
         socket
           .to(message.roomId)
-          .emit("start_game", { start: false, symbol: "o" });
+          .emit("start_game", { start: false, color: color2, startTime, timeLengthMs });
       }
     }
   }

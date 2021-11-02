@@ -25,8 +25,9 @@ export const GameList = (props: GameListProps) => {
     const handleGameStart = () => {
         if (socketService.socket) {
             gameService.onStartGame(socketService.socket, (options) => {
+                console.log('options: ', { options });
                 setWaitForGameDialog(false);
-                history.push('/game')
+                history.push('/game', options)
             });
         }
     };
