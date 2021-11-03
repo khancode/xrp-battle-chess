@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 import 'reflect-metadata';
+import fundWallet from './xrpl-util/fundWallet';
 import loginHelper from './db/loginHelper'
 import socketServer from './socket';
 const app = express();
@@ -30,13 +31,12 @@ app.get('/socketsConnected', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    let result;
     try {
-        result = loginHelper(req.body.username);
+        const result = loginHelper(req.body.username);
+        res.json(result);
     } catch (err) {
         res.status(403).send({ error: err.message });
     }
-    res.json(result);
 });
 
 app.get('/rooms', (req, res) => {
@@ -68,6 +68,15 @@ app.get('/rooms/vacancy', (req, res) => {
     })
     console.log('rooms:', rooms);
     res.send(rooms);
+});
+
+app.post('/fundWallet', async (req, res) => {
+    try {
+        const result = await fundWallet(req.body.username);
+        res.json(result);
+    } catch (err) {
+        res.status(403).send({ error: err.message });
+    }
 });
 
 // app.listen(port, () => {

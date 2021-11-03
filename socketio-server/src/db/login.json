@@ -1,5 +1,26 @@
 {
     "omar": {
-        "xrpWalletSeed": "TODOD needs a wallet"
+        "wallet": {
+            "publicKey": "ED6E86A5936AB81D323CB2E2655614F9EFF5025340CAEEF49ABB83A6C4E767EFC6",
+            "privateKey": "ED364D3A56FF221204CAA2D62F82E1F70152E81DA410E52C817002F39792ABB53B",
+            "classicAddress": "r3pUiZ5JPosJtQKcjfcYRHUEFUAmvLhyp6",
+            "seed": "sEdVh76ebmcW5XEZKoTcusaSEfakTnS"
+        }
+    },
+    "bro": {
+        "wallet": {
+            "publicKey": "EDCED3ECF5DF20946CAB217209C173B9C63E1086D9D316F4B52684A6422F38BE4F",
+            "privateKey": "ED708571D34DE741CFCDDDB54C71BB26CD5FDC15AB5AAFA283414BDDE8EEFD6428",
+            "classicAddress": "rMTJyodYdfN9QPQpsHEiwhaeLYzJ8z784G",
+            "seed": "sEdSgBaBEWqFWYJrQMHER6rzBSsoxM5"
+        }
+    },
+    "test1": {
+        "wallet": {
+            "publicKey": "EDE5B1C85908E2E8F3EEA6DE1C1DE7DA781F070FC3256E8DFFEB0DE281B7349284",
+            "privateKey": "ED38AB81DE3BF8337CC3DB509E75266B5AFD0EB63D662F7CDE2EF73E558C10063A",
+            "classicAddress": "rK7yDEJva42SRgRauPjoK5oJn6nXRdhKuh",
+            "seed": "sEd7i7sXzgtDBjdWVr2uq3hHDCYjtzB"
+        }
     }
 }
