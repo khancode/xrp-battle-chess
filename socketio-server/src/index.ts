@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import fundWallet from './xrpl-util/fundWallet';
 import loginHelper from './db/loginHelper'
 import socketServer from './socket';
+import getXrpBalance from './xrpl-util/getXrpBalance';
 const app = express();
 const port = 3000;
 
@@ -32,8 +33,15 @@ app.get('/socketsConnected', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     try {
-        const result = loginHelper(req.body.username);
-        res.json(result);
+        const { username } = req.body;
+        const { wallet } = loginHelper(username);
+        const xrpBalance = await getXrpBalance(username);
+        res.json({
+            wallet: {
+                classicAddress: wallet.classicAddress,
+                xrpBalance,
+            }
+        });
     } catch (err) {
         res.status(403).send({ error: err.message });
     }
@@ -74,6 +82,15 @@ app.post('/fundWallet', async (req, res) => {
     try {
         const result = await fundWallet(req.body.username);
         res.json(result);
+    } catch (err) {
+        res.status(403).send({ error: err.message });
+    }
+});
+
+app.post('/getXrpBalance', async (req, res) => {
+    try {
+        const xrpBalance = await getXrpBalance(req.body.username);
+        res.json({ xrpBalance });
     } catch (err) {
         res.status(403).send({ error: err.message });
     }

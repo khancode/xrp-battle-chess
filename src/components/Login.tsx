@@ -41,7 +41,7 @@ export const Login = (props: LoginProps) => {
             setLoginPendingDialog(false);
             const options = {
                 username,
-                xrpWallet: null,
+                wallet: response.data.wallet,
             };
             history.push('/home', options)
         } catch (err) {
