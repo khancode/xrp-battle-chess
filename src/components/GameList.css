@@ -4,7 +4,26 @@
     width: 750px;
 }
 
-.create-game-input {
+.create-game-form {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    width: 350px;
+    margin: 0 auto;
+}
+
+.game-rules-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-rule-input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.game-rule-description {
+    padding-right: 10px;
 }

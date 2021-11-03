@@ -6,6 +6,7 @@ import {
   SocketIO,
 } from "socket-controllers";
 import { Server, Socket } from "socket.io";
+import gameRoomIdToRules from '../../db/gameRoomIdToRules';
 
 enum PlayerColor {
   white = 'white',
@@ -22,6 +23,11 @@ export class RoomController {
     @MessageBody() message: any
   ) {
     console.log("New User joining room: ", message);
+
+    // gameRules is defined if a new game is created
+    if (message.gameRules) {
+      gameRoomIdToRules.set(message.roomId, message.gameRules);
+    }
 
     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
     const socketRooms = Array.from(socket.rooms.values()).filter(
@@ -45,11 +51,28 @@ export class RoomController {
         const color1 = Math.round(Math.random()) === 0 ? white : black;
         const color2 = color1 === white ? black : white;
         const startTime = Date.now();
+        const gameRules = gameRoomIdToRules.get(message.roomId);
 
-        socket.emit("start_game", { start: true, color: color1, startTime, timeLengthMs });
+        socket.emit(
+          "start_game",
+          { 
+            start: true,
+            color: color1,
+            startTime,
+            timeLengthMs,
+            gameRules,
+          });
         socket
           .to(message.roomId)
-          .emit("start_game", { start: false, color: color2, startTime, timeLengthMs });
+          .emit(
+            "start_game",
+            {
+              start: false,
+              color: color2,
+              startTime,
+              timeLengthMs,
+              gameRules,
+            });
       }
     }
   }

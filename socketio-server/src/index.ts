@@ -8,6 +8,7 @@ import loginHelper from './db/loginHelper'
 import socketServer from './socket';
 import getXrpBalance from './xrpl-util/getXrpBalance';
 import { rules } from './xrp-battle';
+import gameRoomIdToRules from './db/gameRoomIdToRules';
 const app = express();
 const port = 3000;
 
@@ -99,6 +100,14 @@ app.post('/getXrpBalance', async (req, res) => {
 
 app.get('/xrpBattle/rules', (req, res) => {
     res.json(rules);
+});
+
+app.get('/xrpBattle/games', (req, res) => {
+    const games = [];
+    gameRoomIdToRules.forEach((rules, roomId) => {
+        games.push({ roomId, rules });
+    })
+    res.json(games);
 });
 
 server.listen(port, () => {

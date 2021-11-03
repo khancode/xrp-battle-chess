@@ -57,7 +57,7 @@ export const Login = (props: LoginProps) => {
             <h2 className="description">
             Online chess implemented in React.js and Node.js
             </h2>
-            <form className="create-game-input" onSubmit={createRoom}>
+            <form className="login-form" onSubmit={createRoom}>
                 <TextField
                     id="outlined-basic"
                     required
