@@ -7,6 +7,7 @@ import fundWallet from './xrpl-util/fundWallet';
 import loginHelper from './db/loginHelper'
 import socketServer from './socket';
 import getXrpBalance from './xrpl-util/getXrpBalance';
+import { rules } from './xrp-battle';
 const app = express();
 const port = 3000;
 
@@ -96,9 +97,9 @@ app.post('/getXrpBalance', async (req, res) => {
     }
 });
 
-// app.listen(port, () => {
-//     console.log(`Example app listening at http://localhost:${port}`);
-// });
+app.get('/xrpBattle/rules', (req, res) => {
+    res.json(rules);
+});
 
 server.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

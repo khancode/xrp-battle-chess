@@ -1,11 +1,12 @@
 const loginJson = require('./login.json');
 
 const loginHelper = (username) => {
-    if (!loginJson[username]) {
-        throw new Error(`Invalid username: ${username}`);
+    const lowercase = username.toLowerCase();
+    if (!loginJson[lowercase]) {
+        throw new Error(`Invalid username: ${lowercase}`);
     }
 
-    return loginJson[username];
+    return loginJson[lowercase];
 }
 
 export default loginHelper;
