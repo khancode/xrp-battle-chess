@@ -2,12 +2,21 @@ import * as ChessJS from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
 import './ChessGame.css';
 import socketService from '../services/socketService';
 import gameService from '../services/gameService';
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
+
+const Div = styled('div')(({ theme }) => ({
+   ...theme.typography.button,
+   backgroundColor: theme.palette.background.paper,
+   padding: theme.spacing(1),
+}));
+
+let timeInterval;
 
 export interface ChessGameProps {}
 
@@ -19,21 +28,55 @@ export const ChessGame = (props: ChessGameProps) => {
    );
    const { state }: any = useLocation<Location>();
    const [playerColor] = useState(state.color);
-   const [startTime] = useState(state.startTime);
+   const [playerTimeRemainingMs, setPlayerTimeRemainingMs] = useState(state.timeLengthMs);
+   const [playerClock, setPlayerClock] = useState('');
    const [timeLengthMs] = useState(state.timeLengthMs);
+
+   const [opponentTimeRemainingMs, setOpponentTimeRemainingMs] = useState(state.timeLengthMs);
+   const [opponentClock, setOpponentClock] = useState('');
 
    const handleGameUpdate = () => {
       if (socketService.socket) {
-         gameService.onGameUpdate(socketService.socket, (fen) => {
-            safeGameMutate((game) => {
-               game.load(fen)
-            });
+         gameService.onGameUpdate(socketService.socket, (options) => {
+            const { fen, updateOpponentTimeRemainingMs } = options;
+
+            if (fen) {
+               safeGameMutate((game) => {
+                  game.load(fen)
+               });
+
+               timeInterval = setInterval(() => {
+                  setPlayerTimeRemainingMs(playerTimeRemainingMs => {
+                     setPlayerClock(formatClock(new Date(playerTimeRemainingMs - 1000)));
+      
+                     gameService.updateGame(
+                        socketService.socket, 
+                        {
+                           updateOpponentTimeRemainingMs: playerTimeRemainingMs - 1000,
+                        },
+                     );
+      
+                     return playerTimeRemainingMs - 1000;
+                  });
+                  
+                  // TODO: implement case when time runs out
+                  // if (t.total <= 0) {
+                  //    clearInterval(timeInterval);
+                  // }
+               }, 1000);
+            }
+
+            if (updateOpponentTimeRemainingMs) {
+               setOpponentTimeRemainingMs(updateOpponentTimeRemainingMs);
+               setOpponentClock(formatClock(new Date(updateOpponentTimeRemainingMs)));
+            }
          });
       }
    };
 
    useEffect(() => {
       handleGameUpdate();
+      initClocks();
    }, []);
 
    function safeGameMutate(modify) {
@@ -58,6 +101,10 @@ export const ChessGame = (props: ChessGameProps) => {
       console.log('targetSquare:', targetSquare);
       console.log(game.turn());
 
+      // Prevent player from moving any pieces when it's the opponent's turn.
+      if (game.turn() !== playerColor.charAt(0)) {
+         return;
+      }
 
       let move = null;
       safeGameMutate((game) => {
@@ -68,6 +115,9 @@ export const ChessGame = (props: ChessGameProps) => {
          });
       });
       if (move === null) return false; // illegal move
+
+      /* You got this Omar! */
+      clearInterval(timeInterval);
 
       /* Uncomment line below to have the computer play */
       // setTimeout(makeRandomMove, 200);
@@ -86,7 +136,12 @@ export const ChessGame = (props: ChessGameProps) => {
          });
       }
 
-      gameService.updateGame(socketService.socket, game.fen());
+      gameService.updateGame(
+         socketService.socket, 
+         {
+            fen: game.fen(),
+         },
+      );
 
       return true;
    }
@@ -95,20 +150,73 @@ export const ChessGame = (props: ChessGameProps) => {
       console.log(piece);
    };
 
+   function getTimeRemaining(endtime){
+      const total = Date.parse(endtime) - Date.parse(Date());
+      const seconds = Math.floor( (total/1000) % 60 );
+      const minutes = Math.floor( (total/1000/60) % 60 );
+      const hours = Math.floor( (total/(1000*60*60)) % 24 );
+      const days = Math.floor( total/(1000*60*60*24) );
+      
+      return {
+         total,
+         days,
+         hours,
+         minutes,
+         seconds
+      };
+   }
+
+   function initClocks() {
+      const endDate = new Date(timeLengthMs);
+      const clockText = formatClock(endDate);
+      setPlayerClock(clockText);
+      setOpponentClock(clockText);
+
+      if (playerColor === 'white') {
+         timeInterval = setInterval(() => {
+            setPlayerTimeRemainingMs(playerTimeRemainingMs => {
+               setPlayerClock(formatClock(new Date(playerTimeRemainingMs - 1000)));
+
+               gameService.updateGame(
+                  socketService.socket, 
+                  {
+                     updateOpponentTimeRemainingMs: playerTimeRemainingMs - 1000,
+                  },
+               );
+
+               return playerTimeRemainingMs - 1000;
+            });
+            
+            // TODO: implement case when time runs out
+            // if (t.total <= 0) {
+            //    clearInterval(timeInterval);
+            // }
+         }, 1000);
+      }
+   }
+
+   function formatClock(date) {
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+      return `${minutes}:${(seconds < 10 ? '0' : '') + seconds}`;
+   }
+
    return (
       <div className="home">
          <h1>Chess Game</h1>
          <h2 className="description">
             This is a Chess Game component.
          </h2>
-         <div>startTime: {(new Date(startTime)).toLocaleDateString()} {(new Date(startTime)).toLocaleTimeString()}</div>
-         <div>timeLengthMs: {timeLengthMs}</div>
+         {/* <div>lastUpdateTime: {lastUpdateTimeFormatted()} {(new Date(lastUpdateTime)).toLocaleTimeString()}</div> */}
+         {/* <div>timeLengthMs: {timeLengthMs}</div> */}
+         <Div>Opponent Clock {opponentClock}</Div>
          <Chessboard
             position={game.fen()}
             onPieceDrop={onDrop}
             onPieceClick={onClick}
             boardOrientation={playerColor}
             />
+         <Div>Player Clock {playerClock}</Div>
       </div>
    );
 };

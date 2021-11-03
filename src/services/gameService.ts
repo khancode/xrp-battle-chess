@@ -10,15 +10,15 @@ class GameService {
         });
     }
 
-    public async updateGame(socket: Socket, fen) {
-        socket.emit('update_game', { fen });
+    public async updateGame(socket: Socket, options) {
+        socket.emit('update_game', options);
     }
 
     public async onGameUpdate(
         socket: Socket,
-        listener: (fen) => void
+        listener: (options) => void
     ) {
-        socket.on('on_game_update', ({ fen }) => listener(fen));
+        socket.on('on_game_update', (options) => listener(options));
     }
 
     public async onStartGame(
