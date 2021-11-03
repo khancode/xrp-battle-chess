@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 import 'reflect-metadata';
+import loginHelper from './db/loginHelper'
 import socketServer from './socket';
 const app = express();
 const port = 3000;
@@ -16,6 +17,7 @@ app.use(cors({
 }));
 
 app.use(express.static(path.join(__dirname, '../../dist')))
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../dist/index.html'));
@@ -25,6 +27,16 @@ app.get('/socketsConnected', async (req, res) => {
     const socketsConnected = Array.from(await io.allSockets());
     console.log(socketsConnected);
     res.send(socketsConnected);
+});
+
+app.post('/login', async (req, res) => {
+    let result;
+    try {
+        result = loginHelper(req.body.username);
+    } catch (err) {
+        res.status(403).send({ error: err.message });
+    }
+    res.json(result);
 });
 
 app.get('/rooms', (req, res) => {

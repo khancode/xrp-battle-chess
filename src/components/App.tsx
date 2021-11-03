@@ -9,6 +9,7 @@ import socketService from '../services/socketService';
 import { ChessGame } from './ChessGame';
 import { GameList } from './GameList';
 import { Home } from './Home';
+import { Login } from './Login';
 
 export interface AppProps {}
 
@@ -32,7 +33,8 @@ export const App = (props: AppProps) => {
          <Switch>
             <Route path="/games" component={GameList} />
             <Route path="/game" component={ChessGame} />
-            <Route path="/" component={Home} />
+            <Route path="/home" component={Home} />
+            <Route path="/" component={Login} />
          </Switch>
       </BrowserRouter>
    );
