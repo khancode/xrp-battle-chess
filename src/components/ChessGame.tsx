@@ -4,9 +4,12 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import CloseIcon from '@mui/icons-material/Close';
 import './ChessGame.css';
 import socketService from '../services/socketService';
 import gameService from '../services/gameService';
+import { Alert, Collapse, IconButton } from '@mui/material';
+import axios from 'axios';
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
 
@@ -29,9 +32,16 @@ export const ChessGame = (props: ChessGameProps) => {
    const { state }: any = useLocation<Location>();
    const [gameRules] = useState(state.gameRules);
    const [playerColor] = useState(state.color);
+   const [username] = useState(state.colorToUsername[state.color]);
+   const [playerXrpBalance, setPlayerXrpBalance] = useState(state.usernameToXrpBalance[username]);
+   const [opponentUsername] = useState(state.colorToUsername[state.color === 'white' ? 'black' : 'white']);
+   const [opponentXrpBalance, setOpponentXrpBalance] = useState(state.usernameToXrpBalance[opponentUsername])
    const [playerTimeRemainingMs, setPlayerTimeRemainingMs] = useState(state.timeLengthMs);
    const [playerClock, setPlayerClock] = useState('');
    const [timeLengthMs] = useState(state.timeLengthMs);
+   const [xrpAlertMessage, setXrpAlertMessage] = useState('');
+   const [xrpAlertSeverity, setXrpAlertSeverity] = useState('');
+   const [showXrpAlert, setShowXrpAlert] = useState(false);
 
    const [opponentTimeRemainingMs, setOpponentTimeRemainingMs] = useState(state.timeLengthMs);
    const [opponentClock, setOpponentClock] = useState('');
@@ -39,7 +49,7 @@ export const ChessGame = (props: ChessGameProps) => {
    const handleGameUpdate = () => {
       if (socketService.socket) {
          gameService.onGameUpdate(socketService.socket, (options) => {
-            const { fen, updateOpponentTimeRemainingMs } = options;
+            const { fen, updateOpponentTimeRemainingMs, captureData } = options;
 
             if (fen) {
                safeGameMutate((game) => {
@@ -53,8 +63,62 @@ export const ChessGame = (props: ChessGameProps) => {
                setOpponentTimeRemainingMs(updateOpponentTimeRemainingMs);
                setOpponentClock(formatClock(new Date(updateOpponentTimeRemainingMs)));
             }
+
+            if (captureData) {
+               console.log('dat captureData bro!:', captureData);
+               if (captureData.capturedUsername === username) {
+                  setXrpAlertMessage(`You lost ${captureData.xrp} XRP! :o`);
+                  setXrpAlertSeverity('error');
+               } else {
+                  setXrpAlertMessage(`Woohoo! You won ${captureData.xrp} XRP! :D`);
+                  setXrpAlertSeverity('success');
+               }
+               setShowXrpAlert(true);
+               setTimeout(() => {
+                  setShowXrpAlert(false);
+               }, 7000);
+
+               fetchXrpBalances();
+            }
          });
       }
+   };
+
+   const fetchXrpBalances = async () => {
+      setPlayerXrpBalance('updating...');
+      setOpponentXrpBalance('updating...');
+      fetchPlayerXrp();
+      fetchOpponentXrp();
+   }
+
+   const fetchPlayerXrp = () => {
+      setTimeout(async () => {
+         const response = await axios.post(
+            `http://localhost:3000/getXrpBalance`,
+            { username },
+         );
+         if (response.data.xrpBalance  === playerXrpBalance) {
+            // Retry request if xrpBalance didn't update
+            fetchPlayerXrp();
+         } else {
+            setPlayerXrpBalance(response.data.xrpBalance);
+         }
+      }, 8000);
+   };
+
+   const fetchOpponentXrp = () => {
+      setTimeout(async () => {
+         const response = await axios.post(
+            `http://localhost:3000/getXrpBalance`,
+            { username: opponentUsername },
+         );
+         if (response.data.xrpBalance  === opponentXrpBalance) {
+            // Retry request if xrpBalance didn't update
+            fetchOpponentXrp();
+         } else {
+            setOpponentXrpBalance(response.data.xrpBalance);
+         }
+      }, 8000);
    };
 
    const startPlayerTimer = () => {
@@ -216,21 +280,46 @@ export const ChessGame = (props: ChessGameProps) => {
    }
 
    return (
-      <div className="home">
+      <div className="game">
          <h1>Chess Game</h1>
          <h2 className="description">
             This is a Chess Game component.
          </h2>
-         {/* <div>lastUpdateTime: {lastUpdateTimeFormatted()} {(new Date(lastUpdateTime)).toLocaleTimeString()}</div> */}
-         {/* <div>timeLengthMs: {timeLengthMs}</div> */}
-         <Div>Opponent Clock {opponentClock}</Div>
+         <Div className="player-data">
+            <Div className="player-data-item">XRP: {opponentXrpBalance}</Div>
+            <Div className="player-data-item">{opponentUsername}</Div>
+            <Div className="player-data-item">{opponentClock}</Div>
+         </Div>
          <Chessboard
             position={game.fen()}
             onPieceDrop={onDrop}
             onPieceClick={onClick}
             boardOrientation={playerColor}
             />
-         <Div>Player Clock {playerClock}</Div>
+         <Div className="player-data">
+            <Div className="player-data-item">XRP: {playerXrpBalance}</Div>
+            <Div className="player-data-item">{username}</Div>
+            <Div className="player-data-item">{playerClock}</Div>
+         </Div>
+         <Collapse in={showXrpAlert}>
+            <Alert
+               icon={false}
+               severity={xrpAlertSeverity === 'success' ? 'success' : 'error'}
+               action={
+                  <IconButton
+                     aria-label="close"
+                     color="inherit"
+                     size="small"
+                     onClick={() => setShowXrpAlert(false)}
+                  >
+                     <CloseIcon fontSize="inherit" />
+                  </IconButton>
+               }
+               sx={{ mb: 2 }}
+            >
+               {xrpAlertMessage}
+            </Alert>
+         </Collapse>
       </div>
    );
 };

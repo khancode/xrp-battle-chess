@@ -11,8 +11,8 @@ class XrplService {
     }
 
     public async disconnect(): Promise<void> {
-        await this.client.disconnect;
-        this.client = null;
+        await this.client.disconnect();
+        // this.client = null;
     }
 }
 

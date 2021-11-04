@@ -22,7 +22,12 @@ export class GameController {
     const roomId = this.getSocketGameRoom(socket);
 
     if (message.captured) {
-      this.handleCaptured(roomId, message.captured);
+      const captureData = this.getCaptureData(roomId, message.captured);
+      // send XRP
+      sendXrp(captureData.capturedUsername, captureData.captorUsername, captureData.xrp);
+      // send capture updates
+      socket.emit('on_game_update', { captureData });
+      socket.to(roomId).emit('on_game_update', { captureData });
     }
 
     socket.to(roomId).emit('on_game_update', message);
@@ -47,7 +52,7 @@ export class GameController {
     return gameRoom;
   }
 
-  private async handleCaptured(roomId, captured) {
+  private getCaptureData(roomId, captured) {
     const usernames = gameRoomIdToUsernames.get(roomId);
     const capturedUsername = //@ts-ignore
       captured.color === usernameToColor.get(usernames[0]) //@ts-ignore
@@ -57,7 +62,10 @@ export class GameController {
 
     const { xrp } = rules.find(rule => rule.id === captured.ruleId);
 
-    // send XRP
-    const result = await sendXrp(capturedUsername, captorUsername, xrp);
+    return {
+      capturedUsername,
+      captorUsername,
+      xrp,
+    };
   }
 }

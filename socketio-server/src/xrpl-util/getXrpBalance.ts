@@ -18,7 +18,7 @@ const getXrpBalance = async (username: string) => {
 
     const result = await client.getXrpBalance(wallet.address);
 
-    xrplService.disconnect();
+    // xrplService.disconnect();
     return result;
 }
 

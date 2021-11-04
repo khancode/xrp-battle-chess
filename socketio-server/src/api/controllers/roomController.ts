@@ -6,6 +6,7 @@ import {
   SocketIO,
 } from "socket-controllers";
 import { Server, Socket } from "socket.io";
+import getXrpBalance from '../../xrpl-util/getXrpBalance';
 import gameRoomIdToRules from '../../db/gameRoomIdToRules';
 import gameRoomIdToTimeLimit from "../../db/gameRoomIdToTimeLimit";
 import gameRoomIdToUsernames from "../../db/gameRoomIdToUsernames";
@@ -75,11 +76,30 @@ export class RoomController {
         console.log(usernames);
         console.log(usernameToColor);
 
+        const colorToUsername = {};
+        //@ts-ignore
+        colorToUsername[color1] = usernames[0];
+        //@ts-ignore
+        colorToUsername[color2] = usernames[1];
+
+        //@ts-ignore
+        const xrpBalance1 = await getXrpBalance(usernames[0]);
+        //@ts-ignore
+        const xrpBalance2 = await getXrpBalance(usernames[1]);
+
+        const usernameToXrpBalance = {};
+        //@ts-ignore
+        usernameToXrpBalance[usernames[0]] = await getXrpBalance(usernames[0]);
+        //@ts-ignore
+        usernameToXrpBalance[usernames[1]] = await getXrpBalance(usernames[1]);
+
         socket.emit(
           "start_game",
           { 
             start: true,
             color: color2,
+            colorToUsername,
+            usernameToXrpBalance,
             startTime,
             timeLengthMs: gameTimeLimit,
             gameRules,
@@ -91,6 +111,8 @@ export class RoomController {
             {
               start: false,
               color: color1,
+              colorToUsername,
+              usernameToXrpBalance,
               startTime,
               timeLengthMs: gameTimeLimit,
               gameRules,
