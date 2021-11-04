@@ -4,11 +4,12 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import './ChessGame.css';
 import socketService from '../services/socketService';
 import gameService from '../services/gameService';
-import { Alert, Collapse, IconButton } from '@mui/material';
+import { Alert, Collapse, IconButton, Typography } from '@mui/material';
 import axios from 'axios';
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
@@ -279,16 +280,20 @@ export const ChessGame = (props: ChessGameProps) => {
       return `${minutes}:${(seconds < 10 ? '0' : '') + seconds}`;
    }
 
+   const getTurnClassName = (color) => {
+      return game.turn() === color.charAt(0) ? 'player-turn' : 'standby-turn';
+   }
+
    return (
       <div className="game">
-         <h1>Chess Game</h1>
-         <h2 className="description">
+         <h1>XRP Battle</h1>
+         {/* <h2 className="description">
             This is a Chess Game component.
-         </h2>
-         <Div className="player-data">
-            <Div className="player-data-item">XRP: {opponentXrpBalance}</Div>
-            <Div className="player-data-item">{opponentUsername}</Div>
-            <Div className="player-data-item">{opponentClock}</Div>
+         </h2> */}
+         <Div className={`player-data ${getTurnClassName(playerColor === 'white' ? 'black' : 'white')}`}>
+            <Typography variant="h6" className="player-data-item xrp-balance">XRP: {opponentXrpBalance}</Typography>
+            <Typography variant="h6" className="player-data-item">{opponentUsername}</Typography>
+            <Typography variant="h6" className="player-data-item clock-group"><AccessTimeIcon className="clock-icon" fontSize="inherit" />{opponentClock}</Typography>
          </Div>
          <Chessboard
             position={game.fen()}
@@ -296,10 +301,10 @@ export const ChessGame = (props: ChessGameProps) => {
             onPieceClick={onClick}
             boardOrientation={playerColor}
             />
-         <Div className="player-data">
-            <Div className="player-data-item">XRP: {playerXrpBalance}</Div>
-            <Div className="player-data-item">{username}</Div>
-            <Div className="player-data-item">{playerClock}</Div>
+         <Div className={`player-data ${getTurnClassName(playerColor)}`}>
+            <Typography variant="h6" className="player-data-item xrp-balance">XRP: {playerXrpBalance}</Typography>
+            <Typography variant="h6" className="player-data-item">{username}</Typography>
+            <Typography variant="h6" className="player-data-item clock-group"><AccessTimeIcon className="clock-icon" fontSize="inherit" />{playerClock}</Typography>
          </Div>
          <Collapse in={showXrpAlert}>
             <Alert

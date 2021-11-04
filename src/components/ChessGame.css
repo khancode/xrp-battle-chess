@@ -19,3 +19,28 @@
 .player-data-item {
    flex: 1;
 }
+
+.player-turn {
+   background: #2196f3 !important;
+   color: white !important;
+}
+
+.standby-turn {
+   background: #e0e0e0 !important;
+}
+
+.xrp-balance {
+   display: flex;
+   justify-content: left;
+   align-items: center;
+}
+
+.clock-group {
+   display: flex;
+   justify-content: right;
+   align-items: center;
+}
+
+.clock-icon {
+   margin-right: 7px;
+}
