@@ -9,6 +9,7 @@ import socketServer from './socket';
 import getXrpBalance from './xrpl-util/getXrpBalance';
 import { rules } from './xrp-battle';
 import gameRoomIdToRules from './db/gameRoomIdToRules';
+import gameRoomIdToTimeLimit from './db/gameRoomIdToTimeLimit';
 const app = express();
 const port = 3000;
 
@@ -109,15 +110,19 @@ app.get('/xrpBattle/games', (req, res) => {
     const games = [];
     gameRoomIdToRules.forEach((rules, roomId) => {
         if (roomsMap.has(roomId)) {
-            games.push({ roomId, rules });
+            const timeLimit = gameRoomIdToTimeLimit.get(roomId);
+            games.push({ roomId, timeLimit, rules });
         } else {
             deleteEmptyRooms.push(roomId);
         }
     });
 
-    deleteEmptyRooms.forEach(roomId => gameRoomIdToRules.delete(roomId));
-
     res.json(games);
+
+    deleteEmptyRooms.forEach(roomId => {
+        gameRoomIdToRules.delete(roomId);
+        gameRoomIdToTimeLimit.delete(roomId);
+    });
 });
 
 server.listen(port, () => {

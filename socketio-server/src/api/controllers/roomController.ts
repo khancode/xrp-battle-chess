@@ -7,12 +7,13 @@ import {
 } from "socket-controllers";
 import { Server, Socket } from "socket.io";
 import gameRoomIdToRules from '../../db/gameRoomIdToRules';
+import gameRoomIdToTimeLimit from "../../db/gameRoomIdToTimeLimit";
 
 enum PlayerColor {
   white = 'white',
   black = 'black',
 }
-const timeLengthMs = 600000; // 10 minutes (in milliseconds)
+// const timeLengthMs = 600000; // 10 minutes (in milliseconds)
 
 @SocketController()
 export class RoomController {
@@ -27,6 +28,7 @@ export class RoomController {
     // gameRules is defined if a new game is created
     if (message.gameRules) {
       gameRoomIdToRules.set(message.roomId, message.gameRules);
+      gameRoomIdToTimeLimit.set(message.roomId, message.gameTimeLimit);
     }
 
     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
@@ -52,6 +54,7 @@ export class RoomController {
         const color2 = color1 === white ? black : white;
         const startTime = Date.now();
         const gameRules = gameRoomIdToRules.get(message.roomId);
+        const gameTimeLimit = gameRoomIdToTimeLimit.get(message.roomId);
 
         socket.emit(
           "start_game",
@@ -59,7 +62,7 @@ export class RoomController {
             start: true,
             color: color1,
             startTime,
-            timeLengthMs,
+            timeLengthMs: gameTimeLimit,
             gameRules,
           });
         socket
@@ -70,7 +73,7 @@ export class RoomController {
               start: false,
               color: color2,
               startTime,
-              timeLengthMs,
+              timeLengthMs: gameTimeLimit,
               gameRules,
             });
       }

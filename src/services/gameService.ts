@@ -3,12 +3,13 @@ import { GameRule } from '../components/GameList';
 // import { IPlayMatrix, IStartGame } from '../../components/game';
 
 class GameService {
-    public async joinGameRoom(socket: Socket, roomId: string, gameRules: Array<GameRule> = null): Promise<boolean> {
+    public async joinGameRoom(socket: Socket, roomId: string, gameTimeLimit = null, gameRules: Array<GameRule> = null): Promise<boolean> {
         return new Promise((rs, rj) => {
             socket.emit(
                 'join_game',
                 {
                     roomId,
+                    gameTimeLimit,
                     gameRules,
                 },
             );

@@ -18,6 +18,7 @@ export interface GameRule {
 
 export const GameList = (props: GameListProps) => {
     const [gameName, setGameName] = useState('');
+    const [gameTimeLimit, setGameTimeLimit] = useState('5'); // 5 minute default
     const [games, setGames] = useState([]);
     const [gameRules, setGameRules] = useState<Array<GameRule>>();
     const [createGameDialog, setCreateGameDialog] = useState(false);
@@ -92,6 +93,11 @@ export const GameList = (props: GameListProps) => {
         setGameName(event.target.value)
     };
 
+    const onGameTimeLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault()
+        setGameTimeLimit(event.target.value)
+    };
+
     const toggleCreateGameDialog = () => {
         setCreateGameDialog(!createGameDialog)
     };
@@ -143,16 +149,17 @@ export const GameList = (props: GameListProps) => {
             return;
         }
 
-        joinRoom(gameName, true);
+        joinRoom(gameName, gameTimeLimit, true);
 
         setWaitForGameDialog(true);
     };
 
-    const joinRoom = async(gameName, isGameCreator=false) => {
+    const joinRoom = async(gameName, gameTimeLimit, isGameCreator=false) => {
         const joined = await gameService
             .joinGameRoom(
                 socketService.socket,
                 gameName,
+                isGameCreator ? convertMinutesToMilliseconds(gameTimeLimit) : null,
                 isGameCreator ? gameRules : null,
             ).catch((err) => {
                 alert(err);
@@ -160,6 +167,14 @@ export const GameList = (props: GameListProps) => {
         
         handleGameStart();
     };
+
+    const convertMinutesToMilliseconds = (minutes) => {
+        return minutes * 60000;
+    }
+
+    const convertMillisecondsToMinutes = (milliseconds) => {
+        return milliseconds / 60000;
+    }
 
     return (
         <div className="game-list">
@@ -196,6 +211,16 @@ export const GameList = (props: GameListProps) => {
                             variant="outlined"
                             value={gameName}
                             onChange={onGameNameChange}
+                            disabled={false}
+                        />
+                        <TextField
+                            id="outlined-basic"
+                            required
+                            type="number"
+                            label="Time Limit (minutes)"
+                            variant="outlined"
+                            value={gameTimeLimit}
+                            onChange={onGameTimeLimitChange}
                             disabled={false}
                         />
                         {renderGameRules(gameRules)}
@@ -237,11 +262,21 @@ export const GameList = (props: GameListProps) => {
                                 onChange={onGameNameChange}
                                 disabled={false}
                             />
+                            <TextField
+                                id="outlined-basic"
+                                required
+                                type="number"
+                                label="Time Limit (minutes)"
+                                variant="outlined"
+                                value={convertMillisecondsToMinutes(gameSelected.timeLimit)}
+                                onChange={onGameTimeLimitChange}
+                                disabled={false}
+                            />
                             {renderGameRules(gameSelected.rules)}
                         </form>
                         <DialogActions>
                             <Button onClick={toggleViewGameRulesDialog}>Cancel</Button>
-                            <Button variant="contained" onClick={() => joinRoom(gameSelected.roomId)}>Accept Game</Button>
+                            <Button variant="contained" onClick={() => joinRoom(gameSelected.roomId, null)}>Accept Game</Button>
                         </DialogActions>
                     </DialogContent>
                 </Dialog>
