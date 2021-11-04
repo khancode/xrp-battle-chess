@@ -103,10 +103,20 @@ app.get('/xrpBattle/rules', (req, res) => {
 });
 
 app.get('/xrpBattle/games', (req, res) => {
+    const roomsMap = io.sockets.adapter.rooms;
+    const deleteEmptyRooms = [];
+
     const games = [];
     gameRoomIdToRules.forEach((rules, roomId) => {
-        games.push({ roomId, rules });
-    })
+        if (roomsMap.has(roomId)) {
+            games.push({ roomId, rules });
+        } else {
+            deleteEmptyRooms.push(roomId);
+        }
+    });
+
+    deleteEmptyRooms.forEach(roomId => gameRoomIdToRules.delete(roomId));
+
     res.json(games);
 });
 

@@ -18,25 +18,26 @@ export interface GameRule {
 
 export const GameList = (props: GameListProps) => {
     const [gameName, setGameName] = useState('');
-    const [rooms, setRooms] = useState([]);
+    const [games, setGames] = useState([]);
     const [gameRules, setGameRules] = useState<Array<GameRule>>();
     const [createGameDialog, setCreateGameDialog] = useState(false);
     const [waitForGameDialog, setWaitForGameDialog] = useState(false);
+    const [viewGameRulesDialog, setViewGameRulesDialog] = useState(false);
+    const [gameSelected, setGameSelected] = useState(null);
     const history = useHistory();
 
-    const getAllRooms = async () => {
-        const response = await axios.get('http://localhost:3000/rooms');
-        setRooms(response.data);
+    const getAllGames = async () => {
+        const response = await axios.get('http://localhost:3000/xrpbattle/games');
+        setGames(response.data);
     };
 
     const getGameRules = async () => {
         const response = await axios.get('http://localhost:3000/xrpbattle/rules');
-        console.log(response.data);
         setGameRules(response.data);
     }
 
     useEffect(() => {
-        getAllRooms();
+        getAllGames();
         getGameRules();
     }, []);
 
@@ -50,15 +51,20 @@ export const GameList = (props: GameListProps) => {
         }
     };
 
-    const showRooms = () => {
+    const onViewRules = (game) => {
+        setGameSelected(game);
+        toggleViewGameRulesDialog();
+    }
+
+    const showGames = () => {
         return (
             <List dense={false}>
-                {rooms.map((room) => (
+                {games.map((game) => (
                     <ListItem
-                        key={room}
+                        key={game.roomId}
                         secondaryAction={
-                            <Button variant="contained" onClick={() => joinRoom(room)}>
-                                Join Game
+                            <Button variant="contained" onClick={() => onViewRules(game)}>
+                                View Rules
                             </Button>
                         }
                     >
@@ -68,7 +74,7 @@ export const GameList = (props: GameListProps) => {
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary={`Room Name: ${room}`}
+                            primary={`Game Name: ${game.roomId}`}
                             secondary={false ? 'Secondary text' : null}
                         />
                     </ListItem>
@@ -76,6 +82,10 @@ export const GameList = (props: GameListProps) => {
             </List>
         );
     };
+
+    const toggleViewGameRulesDialog = () => {
+        setViewGameRulesDialog(!viewGameRulesDialog);
+    }
 
     const onGameNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault()
@@ -100,12 +110,12 @@ export const GameList = (props: GameListProps) => {
         });
     };
 
-    const renderGameRules = () => {
-        if (!gameRules) return;
+    const renderGameRules = (rules) => {
+        if (!rules) return;
 
         return (
             <div className="game-rules-form">
-                {gameRules.map(rule => {
+                {rules.map(rule => {
                     return (
                         <div key={rule.id} className="game-rule-input-group">
                             <div className="game-rule-description">{rule.description}</div>
@@ -153,7 +163,7 @@ export const GameList = (props: GameListProps) => {
 
     return (
         <div className="game-list">
-            <h1>All Rooms</h1>
+            <h1>All Games</h1>
             <h2 className="description">
                 Join a game or create one.
             </h2>
@@ -164,7 +174,7 @@ export const GameList = (props: GameListProps) => {
                 Create a Game Room
             </Button>
 
-            {showRooms()}
+            {showGames()}
 
             <Dialog
                 fullWidth={true}
@@ -188,7 +198,7 @@ export const GameList = (props: GameListProps) => {
                             onChange={onGameNameChange}
                             disabled={false}
                         />
-                        {renderGameRules()}
+                        {renderGameRules(gameRules)}
                     </form>
                     <DialogActions>
                         <Button onClick={toggleCreateGameDialog}>Cancel</Button>
@@ -202,6 +212,40 @@ export const GameList = (props: GameListProps) => {
                     Waiting for a player to join your game...
                 </DialogTitle>
             </Dialog>
+
+            {
+                gameSelected &&
+                <Dialog
+                    fullWidth={true}
+                    maxWidth="sm"
+                    open={viewGameRulesDialog}
+                >
+                    <DialogTitle>
+                        Game Rules
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            These are the rules for this game.
+                        </DialogContentText>
+                        <form className="create-game-form" onSubmit={createRoom}>
+                            <TextField
+                                id="outlined-basic"
+                                required
+                                label="Game Name"
+                                variant="outlined"
+                                value={gameSelected.roomId}
+                                onChange={onGameNameChange}
+                                disabled={false}
+                            />
+                            {renderGameRules(gameSelected.rules)}
+                        </form>
+                        <DialogActions>
+                            <Button onClick={toggleViewGameRulesDialog}>Cancel</Button>
+                            <Button variant="contained" onClick={() => joinRoom(gameSelected.roomId)}>Accept Game</Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>
+            }
         </div>
     );
 };
