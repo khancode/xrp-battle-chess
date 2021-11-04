@@ -8,6 +8,8 @@ import {
 import { Server, Socket } from "socket.io";
 import gameRoomIdToRules from '../../db/gameRoomIdToRules';
 import gameRoomIdToTimeLimit from "../../db/gameRoomIdToTimeLimit";
+import gameRoomIdToUsernames from "../../db/gameRoomIdToUsernames";
+import usernameToColor from "../../db/usernameToColor";
 
 enum PlayerColor {
   white = 'white',
@@ -24,6 +26,12 @@ export class RoomController {
     @MessageBody() message: any
   ) {
     console.log("New User joining room: ", message);
+
+    if (!gameRoomIdToUsernames.has(message.roomId)) {
+      gameRoomIdToUsernames.set(message.roomId, []);
+    }
+    //@ts-ignore
+    gameRoomIdToUsernames.get(message.roomId).push(message.username);
 
     // gameRules is defined if a new game is created
     if (message.gameRules) {
@@ -56,11 +64,22 @@ export class RoomController {
         const gameRules = gameRoomIdToRules.get(message.roomId);
         const gameTimeLimit = gameRoomIdToTimeLimit.get(message.roomId);
 
+        // Assign color to username map
+        const usernames = gameRoomIdToUsernames.get(message.roomId);
+        //@ts-ignore
+        usernameToColor.set(usernames[0], color1);
+        //@ts-ignore
+        usernameToColor.set(usernames[1], color2);
+
+        console.log('this feel is too real');
+        console.log(usernames);
+        console.log(usernameToColor);
+
         socket.emit(
           "start_game",
           { 
             start: true,
-            color: color1,
+            color: color2,
             startTime,
             timeLengthMs: gameTimeLimit,
             gameRules,
@@ -71,7 +90,7 @@ export class RoomController {
             "start_game",
             {
               start: false,
-              color: color2,
+              color: color1,
               startTime,
               timeLengthMs: gameTimeLimit,
               gameRules,

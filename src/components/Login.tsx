@@ -55,7 +55,7 @@ export const Login = (props: LoginProps) => {
         <div className="login">
             <h1>Online React Chess!</h1>
             <h2 className="description">
-            Online chess implemented in React.js and Node.js
+                Online chess implemented in React.js and Node.js
             </h2>
             <form className="login-form" onSubmit={createRoom}>
                 <TextField

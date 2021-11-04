@@ -8,7 +8,9 @@ import socketService from '../services/socketService';
 import './GameList.css';
 import gameService from '../services/gameService';
 
-export interface GameListProps {}
+export interface GameListProps {
+    username: string;
+}
 
 export interface GameRule {
     id: string;
@@ -149,16 +151,17 @@ export const GameList = (props: GameListProps) => {
             return;
         }
 
-        joinRoom(gameName, gameTimeLimit, true);
+        joinRoom(gameName, props.username, gameTimeLimit, true);
 
         setWaitForGameDialog(true);
     };
 
-    const joinRoom = async(gameName, gameTimeLimit, isGameCreator=false) => {
+    const joinRoom = async(gameName, username, gameTimeLimit, isGameCreator=false) => {
         const joined = await gameService
             .joinGameRoom(
                 socketService.socket,
                 gameName,
+                username,
                 isGameCreator ? convertMinutesToMilliseconds(gameTimeLimit) : null,
                 isGameCreator ? gameRules : null,
             ).catch((err) => {
@@ -276,7 +279,7 @@ export const GameList = (props: GameListProps) => {
                         </form>
                         <DialogActions>
                             <Button onClick={toggleViewGameRulesDialog}>Cancel</Button>
-                            <Button variant="contained" onClick={() => joinRoom(gameSelected.roomId, null)}>Accept Game</Button>
+                            <Button variant="contained" onClick={() => joinRoom(gameSelected.roomId, props.username, null)}>Accept Game</Button>
                         </DialogActions>
                     </DialogContent>
                 </Dialog>

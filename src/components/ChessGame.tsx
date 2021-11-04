@@ -23,10 +23,11 @@ export interface ChessGameProps {}
 export const ChessGame = (props: ChessGameProps) => {
    const [game, setGame] = useState(new Chess());
    const [captured, setCaptured] = useState(
-      {w: {p: 0, n: 0, b: 0, r: 0, q: 0},
-       b: {p: 0, n: 0, b: 0, r: 0, q: 0}}
+      {white: {p: 0, n: 0, b: 0, r: 0, q: 0},
+       black: {p: 0, n: 0, b: 0, r: 0, q: 0}}
    );
    const { state }: any = useLocation<Location>();
+   const [gameRules] = useState(state.gameRules);
    const [playerColor] = useState(state.color);
    const [playerTimeRemainingMs, setPlayerTimeRemainingMs] = useState(state.timeLengthMs);
    const [playerClock, setPlayerClock] = useState('');
@@ -129,12 +130,20 @@ export const ChessGame = (props: ChessGameProps) => {
       /* Uncomment line below to have the computer play */
       // setTimeout(makeRandomMove, 200);
 
+
+      let captured = null;
       // @ts-ignore: Object is possibly 'null'.
       if (move != null && move.captured) {
          // @ts-ignore: Object is possibly 'null'.
-         const color = move.color == 'w' ? 'b' : 'w';
+         const color = move.color == 'w' ? 'black' : 'white';
          // @ts-ignore: Object is possibly 'null'.
          const piece = move.captured;
+
+         captured = {
+            color,
+            ruleId: getCaptureRuleId(piece)
+         };
+
          setCaptured((c: any) => {
             const update = {...c};
             update[color][piece]++;
@@ -147,10 +156,26 @@ export const ChessGame = (props: ChessGameProps) => {
          socketService.socket, 
          {
             fen: game.fen(),
+            captured,
          },
       );
 
       return true;
+   }
+
+   const getCaptureRuleId = (piece) => {
+      switch (piece) {
+         case 'p':
+            return 'PAWN_CAPTURE';
+         case 'b':
+            return 'BISHOP_CAPTURE';
+         case 'n':
+            return 'KNIGHT_CAPTURE';
+         case 'r':
+            return 'ROOK_CAPTURE';
+         case 'q':
+            return 'QUEEN_CAPTURE';
+      }
    }
 
    const onClick = (piece) => {
