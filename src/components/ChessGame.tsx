@@ -45,25 +45,7 @@ export const ChessGame = (props: ChessGameProps) => {
                   game.load(fen)
                });
 
-               timeInterval = setInterval(() => {
-                  setPlayerTimeRemainingMs(playerTimeRemainingMs => {
-                     setPlayerClock(formatClock(new Date(playerTimeRemainingMs - 1000)));
-      
-                     gameService.updateGame(
-                        socketService.socket, 
-                        {
-                           updateOpponentTimeRemainingMs: playerTimeRemainingMs - 1000,
-                        },
-                     );
-      
-                     return playerTimeRemainingMs - 1000;
-                  });
-                  
-                  // TODO: implement case when time runs out
-                  // if (t.total <= 0) {
-                  //    clearInterval(timeInterval);
-                  // }
-               }, 1000);
+               startPlayerTimer();
             }
 
             if (updateOpponentTimeRemainingMs) {
@@ -73,6 +55,32 @@ export const ChessGame = (props: ChessGameProps) => {
          });
       }
    };
+
+   const startPlayerTimer = () => {
+      timeInterval = setInterval(() => {
+         setPlayerTimeRemainingMs(playerTimeRemainingMs => {
+            setPlayerClock(formatClock(new Date(playerTimeRemainingMs - 1000)));
+
+            gameService.updateGame(
+               socketService.socket, 
+               {
+                  updateOpponentTimeRemainingMs: playerTimeRemainingMs - 1000,
+               },
+            );
+
+            return playerTimeRemainingMs - 1000;
+         });
+
+         // TODO: implement case when time runs out
+         // if (t.total <= 0) {
+         //    stopPlayerTimer();
+         // }
+      }, 1000);
+   };
+
+   const stopPlayerTimer = () => {
+      clearInterval(timeInterval);
+   }
 
    useEffect(() => {
       handleGameUpdate();
@@ -116,8 +124,7 @@ export const ChessGame = (props: ChessGameProps) => {
       });
       if (move === null) return false; // illegal move
 
-      /* You got this Omar! */
-      clearInterval(timeInterval);
+      stopPlayerTimer();
 
       /* Uncomment line below to have the computer play */
       // setTimeout(makeRandomMove, 200);
@@ -173,25 +180,7 @@ export const ChessGame = (props: ChessGameProps) => {
       setOpponentClock(clockText);
 
       if (playerColor === 'white') {
-         timeInterval = setInterval(() => {
-            setPlayerTimeRemainingMs(playerTimeRemainingMs => {
-               setPlayerClock(formatClock(new Date(playerTimeRemainingMs - 1000)));
-
-               gameService.updateGame(
-                  socketService.socket, 
-                  {
-                     updateOpponentTimeRemainingMs: playerTimeRemainingMs - 1000,
-                  },
-               );
-
-               return playerTimeRemainingMs - 1000;
-            });
-            
-            // TODO: implement case when time runs out
-            // if (t.total <= 0) {
-            //    clearInterval(timeInterval);
-            // }
-         }, 1000);
+         startPlayerTimer();
       }
    }
 
