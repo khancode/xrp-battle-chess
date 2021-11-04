@@ -10,6 +10,7 @@ import { ChessGame } from './ChessGame';
 import { GameList } from './GameList';
 import { Home } from './Home';
 import { Login } from './Login';
+import './App.css';
 
 export interface AppProps {}
 

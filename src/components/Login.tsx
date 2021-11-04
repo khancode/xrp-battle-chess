@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Dialog, DialogTitle, Button, TextField } from '@mui/material';
+import { Dialog, DialogTitle, Button, TextField, Card, CardContent, Typography } from '@mui/material';
 import axios from 'axios';
 
-// TODO: style Login
-// import './Login.css';
+import './Login.css';
 
 export interface LoginProps {}
 
@@ -53,33 +52,52 @@ export const Login = (props: LoginProps) => {
 
     return (
         <div className="login">
-            <h1>Online React Chess!</h1>
-            <h2 className="description">
-                Online chess implemented in React.js and Node.js
-            </h2>
-            <form className="login-form" onSubmit={createRoom}>
-                <TextField
-                    id="outlined-basic"
-                    required
-                    label="Username"
-                    variant="outlined"
-                    value={username}
-                    onChange={onUsernameChange}
-                    disabled={false}
-                />
-                <Button
-                    variant="outlined"
-                    onClick={createRoom}
-                    type="submit"
-                >
-                    Login
-                </Button>
-            </form>
+            
             <Dialog open={loginPendingDialog}>
                 <DialogTitle>
                     Login in progress...
                 </DialogTitle>
             </Dialog>
+
+            <Card sx={{ minWidth: 275 }}>
+                <CardContent className="login-card-content">
+                    <h1>Welcome to XRP Battle (Chess edition)!</h1>
+                    <h2 className="description">
+                        Built with solidarity, love, & coffee.
+                    </h2>
+                    <form className="login-form" onSubmit={createRoom}>
+                        <TextField
+                            id="outlined-basic"
+                            required
+                            label="Username"
+                            variant="outlined"
+                            value={username}
+                            onChange={onUsernameChange}
+                            disabled={false}
+                        />
+                        <Button
+                            className="login-button"
+                            variant="contained"
+                            onClick={createRoom}
+                            type="submit"
+                        >
+                            Login
+                        </Button>
+                    </form>
+
+                    {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                        Word of the Day
+                    </Typography>
+                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                        adjective
+                    </Typography>
+                    <Typography variant="body2">
+                        well meaning and kindly.
+                        <br />
+                        {'"a benevolent smile"'}
+                    </Typography> */}
+                </CardContent>
+            </Card>
         </div>
     );
 };

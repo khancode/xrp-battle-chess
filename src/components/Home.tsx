@@ -15,10 +15,7 @@ export const Home = (props: HomeProps) => {
 
    return (
       <div className="home">
-         <h1>Online React Chess!</h1>
-         <h2 className="description">
-            Username address: {username}
-         </h2>
+         <h1>Welcome back, {username}!</h1>
          <h2 className="description">
             Wallet address: {classicAddress}
          </h2>
