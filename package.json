@@ -1,7 +1,7 @@
 {
-  "name": "react-chess",
+  "name": "xrp-battle-chess",
   "version": "1.0.0",
-  "description": "Chess implemented using React",
+  "description": "XRP Battle implemented in online chess",
   "main": "index.html",
   "scripts": {
     "build": "npx webpack --mode production",
