@@ -61,9 +61,10 @@ export const GameList = (props: GameListProps) => {
 
     const showGames = () => {
         return (
-            <List dense={false}>
+            <List dense={false} className="show-games-list">
                 {games.map((game) => (
                     <ListItem
+                        className="show-games-list-item"
                         key={game.roomId}
                         secondaryAction={
                             <Button variant="contained" onClick={() => onViewRules(game)}>
@@ -77,7 +78,7 @@ export const GameList = (props: GameListProps) => {
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary={`Game Name: ${game.roomId}`}
+                            primary={game.roomId}
                             secondary={false ? 'Secondary text' : null}
                         />
                     </ListItem>
@@ -181,15 +182,15 @@ export const GameList = (props: GameListProps) => {
 
     return (
         <div className="game-list">
-            <h1>All Games</h1>
             <h2 className="description">
                 Join a game or create one.
             </h2>
             <Button
-                variant="outlined"
+                className="create-game-button"
+                variant="contained"
                 onClick={toggleCreateGameDialog}
             >
-                Create a Game Room
+                Create a Game
             </Button>
 
             {showGames()}
@@ -199,16 +200,17 @@ export const GameList = (props: GameListProps) => {
                 maxWidth="sm"
                 open={createGameDialog}
             >
-                <DialogTitle>
+                <DialogTitle className="create-game-dialog-title">
                     Create a new game
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
+                    <DialogContentText className="create-game-description">
                         Specify rules for the game.
                     </DialogContentText>
                     <form className="create-game-form" onSubmit={createRoom}>
                         <TextField
                             id="outlined-basic"
+                            className="game-name-textfield"
                             required
                             label="Game Name"
                             variant="outlined"
@@ -248,16 +250,17 @@ export const GameList = (props: GameListProps) => {
                     maxWidth="sm"
                     open={viewGameRulesDialog}
                 >
-                    <DialogTitle>
+                    <DialogTitle className="create-game-dialog-title">
                         Game Rules
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText>
+                        <DialogContentText className="create-game-description">
                             These are the rules for this game.
                         </DialogContentText>
                         <form className="create-game-form" onSubmit={createRoom}>
                             <TextField
                                 id="outlined-basic"
+                                className="game-name-textfield"
                                 required
                                 label="Game Name"
                                 variant="outlined"

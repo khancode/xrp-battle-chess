@@ -1,10 +1,18 @@
 {
     "omar": {
         "wallet": {
-            "publicKey": "ED6E86A5936AB81D323CB2E2655614F9EFF5025340CAEEF49ABB83A6C4E767EFC6",
-            "privateKey": "ED364D3A56FF221204CAA2D62F82E1F70152E81DA410E52C817002F39792ABB53B",
-            "classicAddress": "r3pUiZ5JPosJtQKcjfcYRHUEFUAmvLhyp6",
-            "seed": "sEdVh76ebmcW5XEZKoTcusaSEfakTnS"
+            "publicKey": "EDF49DD90229A3B193B0B707A2EBC2EEA46619AFD3B0D9EFD7C965C1EBDC3BB16E",
+            "privateKey": "ED1BABAFE439F313C3F5DD06384FE3D2D55BBCDBA838605982A0BDBA03FDD646AC",
+            "classicAddress": "rJsCv4uAbmRRKFGNt18YS7XgQWV1ZXUod3",
+            "seed": "sEdSSv61qLySAxEgvQeS14fq4K7N4Xa"
+        }
+    },
+    "satoshi": {
+        "wallet": {
+            "publicKey": "ED266582AD319C7D68DEB984398DE339E8C86A7F4CF68050772D56176530252D9C",
+            "privateKey": "ED52B7CD2B87DEB5752E1C47D5BBDEBCBA313CF9E3717A754309BFAD2713F7B868",
+            "classicAddress": "rnq9CGGZoLB3vsphnBbk2LFzsjq8B9iJFc",
+            "seed": "sEd7cXJurzYpPmAKnJT9zazXiACF2Rc"
         }
     },
     "bro": {

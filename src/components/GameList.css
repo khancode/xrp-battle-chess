@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     width: 750px;
+    align-items: center;
 }
 
 .create-game-form {
@@ -15,6 +16,33 @@
 .game-rules-form {
     display: flex;
     flex-direction: column;
+}
+
+.create-game-button {
+    width: 250px;
+}
+
+.show-games-list {
+    width: 100%;
+}
+
+.show-games-list-item {
+    background: rgb(234, 238, 243);
+}
+
+.create-game-dialog-title {
+    display: flex;
+    justify-content: center;
+}
+
+.create-game-description {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.game-name-textfield {
+    margin-bottom: 15px !important;
 }
 
 .game-rule-input-group {

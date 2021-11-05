@@ -77,7 +77,7 @@ export const ChessGame = (props: ChessGameProps) => {
                setShowXrpAlert(true);
                setTimeout(() => {
                   setShowXrpAlert(false);
-               }, 7000);
+               }, 20000);
 
                fetchXrpBalances();
             }
@@ -287,9 +287,9 @@ export const ChessGame = (props: ChessGameProps) => {
    return (
       <div className="game">
          <h1>XRP Battle</h1>
-         {/* <h2 className="description">
-            This is a Chess Game component.
-         </h2> */}
+         <h2 className="description">
+            {username} vs. {opponentUsername}
+         </h2>
          <Div className={`player-data ${getTurnClassName(playerColor === 'white' ? 'black' : 'white')}`}>
             <Typography variant="h6" className="player-data-item xrp-balance">XRP: {opponentXrpBalance}</Typography>
             <Typography variant="h6" className="player-data-item">{opponentUsername}</Typography>

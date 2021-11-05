@@ -21,7 +21,8 @@
 }
 
 .player-turn {
-   background: #2196f3 !important;
+   /* background: #2196f3 !important; */
+   background: black !important;
    color: white !important;
 }
 
